@@ -1,52 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import './App.css';
+import GenerateHexColor from './hooks/GenerateHexColor';
+import getRandomInt from './helpers/randomInt';
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [listColorHex, setListColorHex] = useState([]);
+  const { isLoading, listColorHex } = GenerateHexColor();
   const [listColorHexJSON, setListColorHexJSON] = useState();
-
-  useEffect(() => {
-    let colorHex = [];
-    let start = 0xff0000,
-      // end = 0x00ff00,
-      end = 0xff0100,
-      temp;
-
-    const interval = setInterval(() => {
-      if (start === end) {
-        clearInterval(interval);
-      }
-      temp = start.toString(16);
-      if (temp.length < 8) {
-        temp = '00000'.substring(0, 6 - temp.length) + temp;
-        colorHex.push(`#${temp}`);
-      }
-      start++;
-      if (colorHex[colorHex.length - 1] === '#ff0100') {
-        setListColorHex(colorHex);
-        setIsLoading(false);
-      }
-    }, 10);
-    return () => clearInterval(interval);
-  }, []);
-
-  console.log('state', listColorHex);
-
+  const [arrayWithNumRandom, setArrayWithNumRandom] = useState([]);
   const [valInput, setValInput] = useState(0);
+  const [onScreen, setOnScreen] = useState(true);
+  const [srcImg, setSrcImg] = useState();
+  
+
   const handleChange = (e) => {
     setArrayWithNumRandom([]);
     setValInput(e.target.value);
   };
-
-  const getRandomInt = (min, max) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  const [arrayWithNumRandom, setArrayWithNumRandom] = useState([]);
 
   useEffect(() => {
     if (valInput === 0) return;
@@ -62,11 +32,6 @@ function App() {
     setListColorHexJSON(Object.values(res));
   }, [arrayWithNumRandom]);
 
-  const [img, setImg] = useState('');
-
-  const [onScreen, setOnScreen] = useState(true);
-  const [srcImg, setSrcImg] = useState();
-
   const screenshot = async () => {
     if (onScreen === false) return;
     const app = document.querySelector('.wrapper');
@@ -76,9 +41,10 @@ function App() {
     const image = new Image();
     image.src = imgData;
     setSrcImg(image.src);
-    console.log(image.src);
     const img = app.appendChild(image);
+
     imgScreened.appendChild(img);
+
     setOnScreen(false);
   };
 
